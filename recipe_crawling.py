@@ -40,7 +40,6 @@ def get_recipe():
 
                 soup = BeautifulSoup(driver.page_source, 'html.parser')
                 # 요리 순서 처리
-                recipe_content = set()
                 steps = soup.find_all('div', {'class': 'view_step_cont'})
                 for s in steps:
                     recipe_content = recipe_content + s.find('div', {'class': 'media-body'}).text.replace('\n', ' ')
