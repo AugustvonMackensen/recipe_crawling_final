@@ -34,16 +34,17 @@ def get_recipe():
             keyword = food_list[idx]
             print(keyword)
             search.send_keys(keyword)
-            WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#frmTopRecipeSearch  \
-                                                        > div > span > button'))).click()
+            click_btn = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#frmTopRecipeSearch  \
+                                                        > div > span > button')))
+            driver.execute_script('arguments[0].click();', click_btn)
             for n in range(1, 40):
                 time.sleep(5)
-                element = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR,
+                li = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR,
                                                                                       '#contents_area_full > ul > ul \
                                                                                       > li:nth-child(' + str(
                                                                                         n) + ') > div > a')))
                 # Element is not clickable 방지 코드
-                driver.execute_script('arguments[0].click();', element)
+                driver.execute_script('arguments[0].click();', li)
                 recipe_title = driver.find_element(By.CSS_SELECTOR, '#contents_area > div.view2_summary.st3 > h3').text
                 soup = BeautifulSoup(driver.page_source, 'html.parser')
                 # 요리 순서 처리
@@ -51,13 +52,11 @@ def get_recipe():
                 recipe_content = ''
                 for s in steps:
                     recipe_content = recipe_content + s.find('div', {'class': 'media-body'}).text
-                    if recipe_content == '':
-                        continue
                 recipe_imgpath = driver.find_element(By.CSS_SELECTOR, '#main_thumbs').get_attribute('src')
-                print([recipe_title, recipe_content, recipe_imgpath])
-                recipe_dict[recipe_title] = [recipe_title, recipe_content, recipe_imgpath]
+                recipe_readcount = driver.find_element(By.CSS_SELECTOR, '#contents_area > div.view2_pic > div.view_cate.st2 > div > span').text
+                print([recipe_title, recipe_content, recipe_imgpath, recipe_readcount])
+                recipe_dict[recipe_title] = [recipe_title, recipe_content, recipe_imgpath, recipe_readcount]
                 driver.back()
         except Exception as Msg:
-            print(Msg)
             continue
     print(recipe_dict)
